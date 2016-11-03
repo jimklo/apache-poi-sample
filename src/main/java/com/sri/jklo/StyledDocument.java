@@ -59,24 +59,40 @@ public class StyledDocument {
 
     /**
      * first discover all the numbering styles defined in the template.
-     * a bit brute force since I can't find a way to just enumerate all the
-     * abstractNum's inside the numbering.xml
+     *
      */
     protected void initNumberingStyles() {
         numbering = document.getNumbering();
 
-        BigInteger curIdx = BigInteger.ONE;
-        XWPFAbstractNum abstractNum;
+        // Use a custom wrapper class in order to access the protected fields.
+        NumberingUtil util = new NumberingUtil(numbering);
 
-        while ((abstractNum = numbering.getAbstractNum(curIdx)) != null) {
+        for (XWPFAbstractNum abstractNum : util.getAbstractNums()) {
             if (abstractNum != null) {
                 CTString pStyle = abstractNum.getCTAbstractNum().getLvlArray(0).getPStyle();
                 if (pStyle != null) {
                     numberStyles.put(pStyle.getVal(), abstractNum);
                 }
             }
-            curIdx = curIdx.add(BigInteger.ONE);
         }
+
+
+      /* the first bit brute force method since I can't find an easy way to just enumerate all the
+        abstractNum's inside the numbering.xml */
+
+//        BigInteger curIdx = BigInteger.ONE;
+//        XWPFAbstractNum abstractNum;
+//
+//        while ((abstractNum = numbering.getAbstractNum(curIdx)) != null) {
+//            if (abstractNum != null) {
+//                CTString pStyle = abstractNum.getCTAbstractNum().getLvlArray(0).getPStyle();
+//                if (pStyle != null) {
+//                    numberStyles.put(pStyle.getVal(), abstractNum);
+//                }
+//            }
+//            curIdx = curIdx.add(BigInteger.ONE);
+//        }
+
 
     }
 
