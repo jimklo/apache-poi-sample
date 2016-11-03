@@ -58,7 +58,9 @@ public class StyledDocument {
     }
 
     /**
-     * discover all the numbering styles defined in the template.
+     * first discover all the numbering styles defined in the template.
+     * a bit brute force since I can't find a way to just enumerate all the
+     * abstractNum's inside the numbering.xml
      */
     protected void initNumberingStyles() {
         numbering = document.getNumbering();
@@ -95,6 +97,12 @@ public class StyledDocument {
         return num;
     }
 
+
+    /**
+     * This creates a five item list with a simple heading, using the specified style..
+     * @param index
+     * @param styleName
+     */
     protected void createStyledNumberList(int index, String styleName) {
         XWPFParagraph p = document.createParagraph();
         XWPFRun run = p.createRun();
