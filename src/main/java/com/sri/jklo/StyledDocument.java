@@ -111,7 +111,7 @@ public class StyledDocument {
         // restart numbering
         XWPFNum num = restartNumbering(styleName);
 
-        for (int i=1; i<=5; i++) {
+        for (int i=1; i<=3; i++) {
             XWPFParagraph p2 = document.createParagraph();
 
             // set the style for this paragraph
@@ -122,9 +122,13 @@ public class StyledDocument {
             CTNumPr numProp = p2.getCTP().getPPr().getNumPr();
             numProp.addNewIlvl().setVal(BigInteger.ZERO);
 
+
             // set the text
             XWPFRun run2 = p2.createRun();
             run2.setText(String.format("Item #%d using '%s' style.", i, styleName));
+
+            // create a sub-list
+            createSubList(num, BigInteger.ONE, styleName, "Sub");
         }
 
         // some whitespace
@@ -133,10 +137,39 @@ public class StyledDocument {
 
     }
 
+    protected BigInteger maxLevel = new BigInteger("3");
+
+    protected void createSubList(XWPFNum num, BigInteger level, String styleName, String prefix) {
+        BigInteger nextLevel = level;
+        if (nextLevel.compareTo(maxLevel) <= 0) {
+            nextLevel = nextLevel.add(BigInteger.ONE);
+        } else {
+            return;
+        }
+
+        for (int i=1; i<=3; i++) {
+            XWPFParagraph p2 = document.createParagraph();
+
+            // set the style for this paragraph
+            p2.setStyle(styleName);
+
+            // set numbering for paragraph
+            p2.setNumID(num.getCTNum().getNumId());
+            CTNumPr numProp = p2.getCTP().getPPr().getNumPr();
+            numProp.addNewIlvl().setVal(level);
+
+
+            // set the text
+            XWPFRun run2 = p2.createRun();
+            run2.setText(String.format("%sItem #%d using '%s' style.", prefix, i, styleName));
+            createSubList(num, nextLevel, styleName, "Sub-"+prefix);
+        }
+    }
+
     public void createReport() {
         createDocFromTemplate();
 
-        for (int a=0; a<5; a++) {
+        for (int a=0; a<3; a++) {
             int i = 0;
             for (String styleName : numberStyles.keySet()) {
                 createStyledNumberList(++i, styleName);
